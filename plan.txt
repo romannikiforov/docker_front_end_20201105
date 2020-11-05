@@ -26,12 +26,14 @@ https://docs.microsoft.com/en-us/windows/wsl/about
 ============== Cтруктура проекта 
 project/
        client/
-             Dockerfile
+             --- React app 🎉
        backend/
              Dockerfile
        docker-composer.yml
        Makefile
 ======================================== 
+
+https://hub.docker.com/_/nginx
 
 ==================== Основные команды для запуска контейнера 
 docker run 
@@ -42,6 +44,7 @@ docker run
      имя_image
 
 ======= 4. Docker file для Nodejs
+
 https://hub.docker.com/_/node
 
 ////  --------------------------------------- server/Dockerfile
@@ -92,3 +95,7 @@ mongodb.MongoClient.connect(mongoUrl, {
   .catch((err) => console.log("Error connect"));
 
 --------------------------------------------- ////
+
+
+healthcheck:
+  test: echo 'db.runCommand("ping").ok' | mongo db:27017/test --quiet
