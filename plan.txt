@@ -1,0 +1,94 @@
+================ WSL-2
+1. Установить систему WSL-2 и Ubuntu 20.04 LTS
+  https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+2. Установить  Docker
+- Linux => docker + docker-compose
+  https://docs.docker.com/engine/install/ubuntu/
+  https://docs.docker.com/compose/install/
+- MacOs
+https://docs.docker.com/docker-for-mac/install/
+
+- Windows
+ https://docs.docker.com/docker-for-windows/wsl
+
+- FAQ
+https://docs.microsoft.com/en-us/windows/wsl/about
+
+3. Настройка Windows Terminal
+  https://docs.microsoft.com/en-us/windows/terminal/
+  https://docs.microsoft.com/en-us/windows/terminal/customize-settings/profile-settings
+
+ - themes 
+  https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes
+
+
+============== Cтруктура проекта 
+project/
+       client/
+             Dockerfile
+       backend/
+             Dockerfile
+       docker-composer.yml
+       Makefile
+======================================== 
+
+==================== Основные команды для запуска контейнера 
+docker run 
+     --p 80:80   // -publish 80:80
+     --name webserver // имя контейнера
+     -d            // --detach -> отвязать контейнер от cli 
+     --rm        // удалить контейнер после его остановки
+     имя_image
+
+======= 4. Docker file для Nodejs
+https://hub.docker.com/_/node
+
+////  --------------------------------------- server/Dockerfile
+FROM node:14-alpine
+
+WORKDIR app
+
+COPY package.json  ./ 
+
+RUN npm install
+
+COPY ./src  .
+
+EXPOSE 4000
+
+CMD ["npm", "run", "dev"]
+--------------------------------------------- ////
+
+docker run --rm -d --name backend -p 4000:4000  ws/node:1.0
+
+docker exec -ti backend sh 
+
+docker run --rm -d --name backend -v $(pwd):/app -v /app/node_modules -p 4000:4000  ws/node:1.0
+
+======= 5. Docker-composer
+
+////  --------------------------------------- connect Mongo 
+const port = process.env.PORT;
+const mongoUrl = process.env.DB_CONNECTION;
+
+mongodb.MongoClient.connect(mongoUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then((client) => {
+    const db = client.db(process.env.DB_NAME);
+
+    app.set("db", db);
+
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, "index.html"));
+    });
+    app.get("/api/test", (req, res) => {
+      res.json({ mes: "Hello from express" });
+    });
+    app.listen(port, () => console.log(`Running on localhost:${port}`));
+  })
+  .catch((err) => console.log("Error connect"));
+
+--------------------------------------------- ////
